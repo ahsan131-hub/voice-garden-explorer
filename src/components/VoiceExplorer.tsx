@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Search, Volume2, Play, Pause, Loader2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
@@ -24,6 +23,7 @@ const VoiceExplorer = () => {
   const [selectedLanguage, setSelectedLanguage] = useState('all');
   const [demoText, setDemoText] = useState('Hello! This is a demonstration of this voice. How do you like the way I sound?');
   const [isLoading, setIsLoading] = useState(true);
+  const [currentlyPlayingVoice, setCurrentlyPlayingVoice] = useState<string | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -84,6 +84,7 @@ const VoiceExplorer = () => {
   const handlePlayDemo = (voice: Voice) => {
     // Stop any current speech
     window.speechSynthesis.cancel();
+    setCurrentlyPlayingVoice(null);
     
     const utterance = new SpeechSynthesisUtterance(demoText);
     const synthVoice = window.speechSynthesis.getVoices().find(v => v.voiceURI === voice.voiceURI);
@@ -96,14 +97,17 @@ const VoiceExplorer = () => {
       
       utterance.onstart = () => {
         console.log(`Started speaking with voice: ${voice.name}`);
+        setCurrentlyPlayingVoice(voice.voiceURI);
       };
       
       utterance.onend = () => {
         console.log(`Finished speaking with voice: ${voice.name}`);
+        setCurrentlyPlayingVoice(null);
       };
       
       utterance.onerror = (event) => {
         console.error('Speech synthesis error:', event);
+        setCurrentlyPlayingVoice(null);
         toast({
           title: "Playback Error",
           description: "Failed to play voice demo",
@@ -117,6 +121,7 @@ const VoiceExplorer = () => {
 
   const stopAllSpeech = () => {
     window.speechSynthesis.cancel();
+    setCurrentlyPlayingVoice(null);
   };
 
   if (isLoading) {
@@ -221,6 +226,7 @@ const VoiceExplorer = () => {
             voice={voice}
             onPlay={() => handlePlayDemo(voice)}
             demoText={demoText}
+            isPlaying={currentlyPlayingVoice === voice.voiceURI}
           />
         ))}
       </div>

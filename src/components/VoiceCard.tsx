@@ -1,6 +1,5 @@
-
 import React from 'react';
-import { Play } from 'lucide-react';
+import { Play, Square } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -17,9 +16,10 @@ interface VoiceCardProps {
   voice: Voice;
   onPlay: () => void;
   demoText: string;
+  isPlaying?: boolean;
 }
 
-const VoiceCard = ({ voice, onPlay, demoText }: VoiceCardProps) => {
+const VoiceCard = ({ voice, onPlay, demoText, isPlaying = false }: VoiceCardProps) => {
   const getLanguageFlag = (lang: string) => {
     const country = lang.split('-')[1] || lang.split('-')[0];
     const flagMap: { [key: string]: string } = {
@@ -59,12 +59,15 @@ const VoiceCard = ({ voice, onPlay, demoText }: VoiceCardProps) => {
   };
 
   return (
-    <Card className="group hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border-2 hover:border-primary/20">
+    <Card className={`group hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border-2 hover:border-primary/20 ${
+      isPlaying ? 'ring-2 ring-primary/50 border-primary/30 bg-primary/5' : ''
+    }`}>
       <CardHeader className="pb-3">
         <CardTitle className="flex items-center justify-between text-lg">
           <div className="flex items-center gap-2">
             <span className="text-2xl">{getGenderIcon(voice.name)}</span>
             <span className="truncate">{voice.name}</span>
+            {isPlaying && <span className="animate-pulse text-primary">🔊</span>}
           </div>
           {voice.default && (
             <Badge variant="secondary" className="text-xs">
@@ -93,11 +96,25 @@ const VoiceCard = ({ voice, onPlay, demoText }: VoiceCardProps) => {
         
         <Button 
           onClick={onPlay}
-          className="w-full group-hover:bg-primary group-hover:text-primary-foreground transition-colors"
-          variant="outline"
+          className={`w-full transition-all duration-200 ${
+            isPlaying 
+              ? 'bg-primary text-primary-foreground shadow-lg scale-105' 
+              : 'group-hover:bg-primary group-hover:text-primary-foreground'
+          }`}
+          variant={isPlaying ? "default" : "outline"}
+          disabled={isPlaying}
         >
-          <Play className="h-4 w-4 mr-2" />
-          Play Demo
+          {isPlaying ? (
+            <>
+              <Square className="h-4 w-4 mr-2 animate-pulse" />
+              Playing...
+            </>
+          ) : (
+            <>
+              <Play className="h-4 w-4 mr-2" />
+              Play Demo
+            </>
+          )}
         </Button>
       </CardContent>
     </Card>
