@@ -81,6 +81,100 @@ const VoiceExplorer = () => {
 
   const uniqueLanguages = [...new Set(voices.map(voice => voice.lang.split('-')[0]))].sort();
 
+  // Group filtered voices by language
+  const groupedVoices = filteredVoices.reduce((groups, voice) => {
+    const language = voice.lang;
+    if (!groups[language]) {
+      groups[language] = [];
+    }
+    groups[language].push(voice);
+    return groups;
+  }, {} as Record<string, Voice[]>);
+
+  const sortedLanguages = Object.keys(groupedVoices).sort();
+
+  const getLanguageDisplayName = (langCode: string) => {
+    const [language, country] = langCode.split('-');
+    const languageNames: Record<string, string> = {
+      'en': 'English',
+      'es': 'Spanish',
+      'fr': 'French',
+      'de': 'German',
+      'it': 'Italian',
+      'pt': 'Portuguese',
+      'ru': 'Russian',
+      'ja': 'Japanese',
+      'ko': 'Korean',
+      'zh': 'Chinese',
+      'ar': 'Arabic',
+      'hi': 'Hindi',
+      'th': 'Thai',
+      'vi': 'Vietnamese',
+      'nl': 'Dutch',
+      'sv': 'Swedish',
+      'no': 'Norwegian',
+      'da': 'Danish',
+      'fi': 'Finnish',
+      'pl': 'Polish',
+      'cs': 'Czech',
+      'hu': 'Hungarian',
+      'ro': 'Romanian',
+      'bg': 'Bulgarian',
+      'hr': 'Croatian',
+      'sk': 'Slovak',
+      'sl': 'Slovenian',
+      'et': 'Estonian',
+      'lv': 'Latvian',
+      'lt': 'Lithuanian',
+      'el': 'Greek',
+      'tr': 'Turkish',
+      'he': 'Hebrew',
+      'ca': 'Catalan',
+      'eu': 'Basque',
+      'gl': 'Galician',
+      'cy': 'Welsh',
+      'ga': 'Irish',
+      'mt': 'Maltese',
+      'is': 'Icelandic',
+      'fo': 'Faroese',
+      'mk': 'Macedonian',
+      'sq': 'Albanian',
+      'sr': 'Serbian',
+      'bs': 'Bosnian',
+      'me': 'Montenegrin',
+    };
+    
+    const languageName = languageNames[language.toLowerCase()] || language.toUpperCase();
+    return country ? `${languageName} (${country.toUpperCase()})` : languageName;
+  };
+
+  const getLanguageFlag = (langCode: string) => {
+    const country = langCode.split('-')[1] || langCode.split('-')[0];
+    const flagMap: { [key: string]: string } = {
+      'US': '🇺🇸', 'GB': '🇬🇧', 'AU': '🇦🇺', 'CA': '🇨🇦',
+      'FR': '🇫🇷', 'DE': '🇩🇪', 'ES': '🇪🇸', 'IT': '🇮🇹',
+      'JP': '🇯🇵', 'KR': '🇰🇷', 'CN': '🇨🇳', 'RU': '🇷🇺',
+      'PT': '🇵🇹', 'NL': '🇳🇱', 'SE': '🇸🇪', 'NO': '🇳🇴',
+      'DK': '🇩🇰', 'FI': '🇫🇮', 'PL': '🇵🇱', 'CZ': '🇨🇿',
+      'HU': '🇭🇺', 'RO': '🇷🇴', 'BG': '🇧🇬', 'HR': '🇭🇷',
+      'SK': '🇸🇰', 'SI': '🇸🇮', 'EE': '🇪🇪', 'LV': '🇱🇻',
+      'LT': '🇱🇹', 'MT': '🇲🇹', 'CY': '🇨🇾', 'IE': '🇮🇪',
+      'AR': '🇦🇷', 'MX': '🇲🇽', 'CL': '🇨🇱', 'CO': '🇨🇴',
+      'PE': '🇵🇪', 'VE': '🇻🇪', 'UY': '🇺🇾', 'PY': '🇵🇾',
+      'BO': '🇧🇴', 'EC': '🇪🇨', 'GT': '🇬🇹', 'HN': '🇭🇳',
+      'SV': '🇸🇻', 'NI': '🇳🇮', 'CR': '🇨🇷', 'PA': '🇵🇦',
+      'DO': '🇩🇴', 'CU': '🇨🇺', 'PR': '🇵🇷', 'BR': '🇧🇷',
+      'IN': '🇮🇳', 'PK': '🇵🇰', 'BD': '🇧🇩', 'LK': '🇱🇰',
+      'TH': '🇹🇭', 'VN': '🇻🇳', 'ID': '🇮🇩', 'MY': '🇲🇾',
+      'SG': '🇸🇬', 'PH': '🇵🇭', 'TW': '🇹🇼', 'HK': '🇭🇰',
+      'TR': '🇹🇷', 'GR': '🇬🇷', 'IL': '🇮🇱', 'SA': '🇸🇦',
+      'EG': '🇪🇬', 'MA': '🇲🇦', 'DZ': '🇩🇿', 'TN': '🇹🇳',
+      'ZA': '🇿🇦', 'NG': '🇳🇬', 'KE': '🇰🇪', 'GH': '🇬🇭',
+      'ET': '🇪🇹', 'TZ': '🇹🇿', 'UG': '🇺🇬', 'ZW': '🇿🇼'
+    };
+    return flagMap[country.toUpperCase()] || '🌐';
+  };
+
   const handlePlayDemo = (voice: Voice) => {
     // Stop any current speech
     window.speechSynthesis.cancel();
@@ -219,15 +313,32 @@ const VoiceExplorer = () => {
         </CardContent>
       </Card>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredVoices.map((voice, index) => (
-          <VoiceCard
-            key={voice.voiceURI}
-            voice={voice}
-            onPlay={() => handlePlayDemo(voice)}
-            demoText={demoText}
-            isPlaying={currentlyPlayingVoice === voice.voiceURI}
-          />
+      {/* Language Sections */}
+      <div className="space-y-8">
+        {sortedLanguages.map((language) => (
+          <div key={language} className="space-y-4">
+            <div className="flex items-center gap-3 border-b border-border pb-2">
+              <span className="text-2xl">{getLanguageFlag(language)}</span>
+              <h2 className="text-2xl font-semibold text-foreground">
+                {getLanguageDisplayName(language)}
+              </h2>
+              <Badge variant="outline" className="ml-auto">
+                {groupedVoices[language].length} {groupedVoices[language].length === 1 ? 'voice' : 'voices'}
+              </Badge>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {groupedVoices[language].map((voice) => (
+                <VoiceCard
+                  key={voice.voiceURI}
+                  voice={voice}
+                  onPlay={() => handlePlayDemo(voice)}
+                  demoText={demoText}
+                  isPlaying={currentlyPlayingVoice === voice.voiceURI}
+                />
+              ))}
+            </div>
+          </div>
         ))}
       </div>
 
