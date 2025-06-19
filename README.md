@@ -1,73 +1,94 @@
-# Welcome to your Lovable project
+# Voice Garden Explorer
 
-## Project info
+A modern web application for exploring and testing speech synthesis voices in your browser. Discover all available voices, filter by language, and play demos to find the perfect voice for your needs.
 
-**URL**: https://lovable.dev/projects/48d6d045-6603-4878-89be-abb1a7a23e9b
+## Features
 
-## How can I edit this code?
+- **Voice Discovery**: Browse all available speech synthesis voices in your browser
+- **Language Filtering**: Filter voices by language and region
+- **Search Functionality**: Search voices by name or language
+- **Live Demos**: Test voices with custom text input
+- **Voice Information**: View detailed information about each voice including language, region, and service type
+- **Responsive Design**: Works seamlessly on desktop and mobile devices
 
-There are several ways of editing your application.
+## Getting Started
 
-**Use Lovable**
+### Prerequisites
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/48d6d045-6603-4878-89be-abb1a7a23e9b) and start prompting.
+- Node.js (version 16 or higher)
+- npm or yarn package manager
 
-Changes made via Lovable will be committed automatically to this repo.
+### Installation
 
-**Use your preferred IDE**
+1. Clone the repository:
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+```bash
+git clone <repository-url>
+cd voice-garden-explorer
+```
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+2. Install dependencies:
 
-Follow these steps:
+```bash
+npm install
+```
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+3. Start the development server:
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+```bash
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+4. Open your browser and navigate to `http://localhost:8080`
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+### Building for Production
 
-**Use GitHub Codespaces**
+To create a production build:
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+```bash
+npm run build
+```
 
-## What technologies are used for this project?
+The built files will be in the `dist` directory.
 
-This project is built with:
+## Usage
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+1. **Browse Voices**: The application will automatically load all available speech synthesis voices in your browser
+2. **Search & Filter**: Use the search bar to find specific voices or filter by language
+3. **Test Voices**: Enter custom text in the demo area and click the play button on any voice card
+4. **Stop Playback**: Use the "Stop All Speech" button to halt any currently playing voice
 
-## How can I deploy this project?
+## Browser Compatibility
 
-Simply open [Lovable](https://lovable.dev/projects/48d6d045-6603-4878-89be-abb1a7a23e9b) and click on Share -> Publish.
+This application uses the Web Speech API, which is supported in most modern browsers:
 
-## Can I connect a custom domain to my Lovable project?
+- Chrome/Chromium (recommended)
+- Firefox
+- Safari
+- Edge
 
-Yes, you can!
+Note: Voice availability may vary by browser and operating system.
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+## Technologies Used
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+- **React 18** - UI framework
+- **TypeScript** - Type safety
+- **Vite** - Build tool and dev server
+- **Tailwind CSS** - Styling
+- **Shadcn/ui** - UI components
+- **Web Speech API** - Speech synthesis
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Submit a pull request
+
+## License
+
+This project is open source and available under the [MIT License](LICENSE).
+
+## Support
+
+If you encounter any issues or have questions, please open an issue on the repository.

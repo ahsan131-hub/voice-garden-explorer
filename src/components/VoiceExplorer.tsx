@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { Search, Volume2, Play, Pause, Loader2 } from 'lucide-react';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Textarea } from '@/components/ui/textarea';
-import { useToast } from '@/hooks/use-toast';
-import VoiceCard from './VoiceCard';
+import React, { useState, useEffect } from "react";
+import { Search, Volume2, Play, Pause, Loader2 } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/hooks/use-toast";
+import VoiceCard from "./VoiceCard";
 
 interface Voice {
   voiceURI: string;
@@ -19,31 +19,35 @@ interface Voice {
 const VoiceExplorer = () => {
   const [voices, setVoices] = useState<Voice[]>([]);
   const [filteredVoices, setFilteredVoices] = useState<Voice[]>([]);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedLanguage, setSelectedLanguage] = useState('all');
-  const [demoText, setDemoText] = useState('Hello! This is a demonstration of this voice. How do you like the way I sound?');
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedLanguage, setSelectedLanguage] = useState("all");
+  const [demoText, setDemoText] = useState(
+    "Hello! This is a demonstration of this voice. How do you like the way I sound?"
+  );
   const [isLoading, setIsLoading] = useState(true);
-  const [currentlyPlayingVoice, setCurrentlyPlayingVoice] = useState<string | null>(null);
+  const [currentlyPlayingVoice, setCurrentlyPlayingVoice] = useState<
+    string | null
+  >(null);
   const { toast } = useToast();
 
   useEffect(() => {
     const loadVoices = () => {
       const availableVoices = window.speechSynthesis.getVoices();
-      console.log('Available voices:', availableVoices);
-      
+      console.log("Available voices:", availableVoices);
+
       if (availableVoices.length > 0) {
-        const voiceData = availableVoices.map(voice => ({
+        const voiceData = availableVoices.map((voice) => ({
           voiceURI: voice.voiceURI,
           name: voice.name,
           lang: voice.lang,
           localService: voice.localService,
-          default: voice.default
+          default: voice.default,
         }));
-        
+
         setVoices(voiceData);
         setFilteredVoices(voiceData);
         setIsLoading(false);
-        
+
         toast({
           title: "Voices Loaded",
           description: `Found ${voiceData.length} available voices`,
@@ -55,10 +59,10 @@ const VoiceExplorer = () => {
     loadVoices();
 
     // Also listen for the voiceschanged event (some browsers need this)
-    window.speechSynthesis.addEventListener('voiceschanged', loadVoices);
+    window.speechSynthesis.addEventListener("voiceschanged", loadVoices);
 
     return () => {
-      window.speechSynthesis.removeEventListener('voiceschanged', loadVoices);
+      window.speechSynthesis.removeEventListener("voiceschanged", loadVoices);
     };
   }, [toast]);
 
@@ -66,20 +70,25 @@ const VoiceExplorer = () => {
     let filtered = voices;
 
     if (searchTerm) {
-      filtered = filtered.filter(voice => 
-        voice.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        voice.lang.toLowerCase().includes(searchTerm.toLowerCase())
+      filtered = filtered.filter(
+        (voice) =>
+          voice.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          voice.lang.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
-    if (selectedLanguage !== 'all') {
-      filtered = filtered.filter(voice => voice.lang.startsWith(selectedLanguage));
+    if (selectedLanguage !== "all") {
+      filtered = filtered.filter((voice) =>
+        voice.lang.startsWith(selectedLanguage)
+      );
     }
 
     setFilteredVoices(filtered);
   }, [voices, searchTerm, selectedLanguage]);
 
-  const uniqueLanguages = [...new Set(voices.map(voice => voice.lang.split('-')[0]))].sort();
+  const uniqueLanguages = [
+    ...new Set(voices.map((voice) => voice.lang.split("-")[0])),
+  ].sort();
 
   // Group filtered voices by language
   const groupedVoices = filteredVoices.reduce((groups, voice) => {
@@ -94,113 +103,178 @@ const VoiceExplorer = () => {
   const sortedLanguages = Object.keys(groupedVoices).sort();
 
   const getLanguageDisplayName = (langCode: string) => {
-    const [language, country] = langCode.split('-');
+    const [language, country] = langCode.split("-");
     const languageNames: Record<string, string> = {
-      'en': 'English',
-      'es': 'Spanish',
-      'fr': 'French',
-      'de': 'German',
-      'it': 'Italian',
-      'pt': 'Portuguese',
-      'ru': 'Russian',
-      'ja': 'Japanese',
-      'ko': 'Korean',
-      'zh': 'Chinese',
-      'ar': 'Arabic',
-      'hi': 'Hindi',
-      'th': 'Thai',
-      'vi': 'Vietnamese',
-      'nl': 'Dutch',
-      'sv': 'Swedish',
-      'no': 'Norwegian',
-      'da': 'Danish',
-      'fi': 'Finnish',
-      'pl': 'Polish',
-      'cs': 'Czech',
-      'hu': 'Hungarian',
-      'ro': 'Romanian',
-      'bg': 'Bulgarian',
-      'hr': 'Croatian',
-      'sk': 'Slovak',
-      'sl': 'Slovenian',
-      'et': 'Estonian',
-      'lv': 'Latvian',
-      'lt': 'Lithuanian',
-      'el': 'Greek',
-      'tr': 'Turkish',
-      'he': 'Hebrew',
-      'ca': 'Catalan',
-      'eu': 'Basque',
-      'gl': 'Galician',
-      'cy': 'Welsh',
-      'ga': 'Irish',
-      'mt': 'Maltese',
-      'is': 'Icelandic',
-      'fo': 'Faroese',
-      'mk': 'Macedonian',
-      'sq': 'Albanian',
-      'sr': 'Serbian',
-      'bs': 'Bosnian',
-      'me': 'Montenegrin',
+      en: "English",
+      es: "Spanish",
+      fr: "French",
+      de: "German",
+      it: "Italian",
+      pt: "Portuguese",
+      ru: "Russian",
+      ja: "Japanese",
+      ko: "Korean",
+      zh: "Chinese",
+      ar: "Arabic",
+      hi: "Hindi",
+      th: "Thai",
+      vi: "Vietnamese",
+      nl: "Dutch",
+      sv: "Swedish",
+      no: "Norwegian",
+      da: "Danish",
+      fi: "Finnish",
+      pl: "Polish",
+      cs: "Czech",
+      hu: "Hungarian",
+      ro: "Romanian",
+      bg: "Bulgarian",
+      hr: "Croatian",
+      sk: "Slovak",
+      sl: "Slovenian",
+      et: "Estonian",
+      lv: "Latvian",
+      lt: "Lithuanian",
+      el: "Greek",
+      tr: "Turkish",
+      he: "Hebrew",
+      ca: "Catalan",
+      eu: "Basque",
+      gl: "Galician",
+      cy: "Welsh",
+      ga: "Irish",
+      mt: "Maltese",
+      is: "Icelandic",
+      fo: "Faroese",
+      mk: "Macedonian",
+      sq: "Albanian",
+      sr: "Serbian",
+      bs: "Bosnian",
+      me: "Montenegrin",
     };
-    
-    const languageName = languageNames[language.toLowerCase()] || language.toUpperCase();
-    return country ? `${languageName} (${country.toUpperCase()})` : languageName;
+
+    const languageName =
+      languageNames[language.toLowerCase()] || language.toUpperCase();
+    return country
+      ? `${languageName} (${country.toUpperCase()})`
+      : languageName;
   };
 
   const getLanguageFlag = (langCode: string) => {
-    const country = langCode.split('-')[1] || langCode.split('-')[0];
+    const country = langCode.split("-")[1] || langCode.split("-")[0];
     const flagMap: { [key: string]: string } = {
-      'US': '🇺🇸', 'GB': '🇬🇧', 'AU': '🇦🇺', 'CA': '🇨🇦',
-      'FR': '🇫🇷', 'DE': '🇩🇪', 'ES': '🇪🇸', 'IT': '🇮🇹',
-      'JP': '🇯🇵', 'KR': '🇰🇷', 'CN': '🇨🇳', 'RU': '🇷🇺',
-      'PT': '🇵🇹', 'NL': '🇳🇱', 'SE': '🇸🇪', 'NO': '🇳🇴',
-      'DK': '🇩🇰', 'FI': '🇫🇮', 'PL': '🇵🇱', 'CZ': '🇨🇿',
-      'HU': '🇭🇺', 'RO': '🇷🇴', 'BG': '🇧🇬', 'HR': '🇭🇷',
-      'SK': '🇸🇰', 'SI': '🇸🇮', 'EE': '🇪🇪', 'LV': '🇱🇻',
-      'LT': '🇱🇹', 'MT': '🇲🇹', 'CY': '🇨🇾', 'IE': '🇮🇪',
-      'AR': '🇦🇷', 'MX': '🇲🇽', 'CL': '🇨🇱', 'CO': '🇨🇴',
-      'PE': '🇵🇪', 'VE': '🇻🇪', 'UY': '🇺🇾', 'PY': '🇵🇾',
-      'BO': '🇧🇴', 'EC': '🇪🇨', 'GT': '🇬🇹', 'HN': '🇭🇳',
-      'SV': '🇸🇻', 'NI': '🇳🇮', 'CR': '🇨🇷', 'PA': '🇵🇦',
-      'DO': '🇩🇴', 'CU': '🇨🇺', 'PR': '🇵🇷', 'BR': '🇧🇷',
-      'IN': '🇮🇳', 'PK': '🇵🇰', 'BD': '🇧🇩', 'LK': '🇱🇰',
-      'TH': '🇹🇭', 'VN': '🇻🇳', 'ID': '🇮🇩', 'MY': '🇲🇾',
-      'SG': '🇸🇬', 'PH': '🇵🇭', 'TW': '🇹🇼', 'HK': '🇭🇰',
-      'TR': '🇹🇷', 'GR': '🇬🇷', 'IL': '🇮🇱', 'SA': '🇸🇦',
-      'EG': '🇪🇬', 'MA': '🇲🇦', 'DZ': '🇩🇿', 'TN': '🇹🇳',
-      'ZA': '🇿🇦', 'NG': '🇳🇬', 'KE': '🇰🇪', 'GH': '🇬🇭',
-      'ET': '🇪🇹', 'TZ': '🇹🇿', 'UG': '🇺🇬', 'ZW': '🇿🇼'
+      US: "🇺🇸",
+      GB: "🇬🇧",
+      AU: "🇦🇺",
+      CA: "🇨🇦",
+      FR: "🇫🇷",
+      DE: "🇩🇪",
+      ES: "🇪🇸",
+      IT: "🇮🇹",
+      JP: "🇯🇵",
+      KR: "🇰🇷",
+      CN: "🇨🇳",
+      RU: "🇷🇺",
+      PT: "🇵🇹",
+      NL: "🇳🇱",
+      SE: "🇸🇪",
+      NO: "🇳🇴",
+      DK: "🇩🇰",
+      FI: "🇫🇮",
+      PL: "🇵🇱",
+      CZ: "🇨🇿",
+      HU: "🇭🇺",
+      RO: "🇷🇴",
+      BG: "🇧🇬",
+      HR: "🇭🇷",
+      SK: "🇸🇰",
+      SI: "🇸🇮",
+      EE: "🇪🇪",
+      LV: "🇱🇻",
+      LT: "🇱🇹",
+      MT: "🇲🇹",
+      CY: "🇨🇾",
+      IE: "🇮🇪",
+      AR: "🇦🇷",
+      MX: "🇲🇽",
+      CL: "🇨🇱",
+      CO: "🇨🇴",
+      PE: "🇵🇪",
+      VE: "🇻🇪",
+      UY: "🇺🇾",
+      PY: "🇵🇾",
+      BO: "🇧🇴",
+      EC: "🇪🇨",
+      GT: "🇬🇹",
+      HN: "🇭🇳",
+      SV: "🇸🇻",
+      NI: "🇳🇮",
+      CR: "🇨🇷",
+      PA: "🇵🇦",
+      DO: "🇩🇴",
+      CU: "🇨🇺",
+      PR: "🇵🇷",
+      BR: "🇧🇷",
+      IN: "🇮🇳",
+      PK: "🇵🇰",
+      BD: "🇧🇩",
+      LK: "🇱🇰",
+      TH: "🇹🇭",
+      VN: "🇻🇳",
+      ID: "🇮🇩",
+      MY: "🇲🇾",
+      SG: "🇸🇬",
+      PH: "🇵🇭",
+      TW: "🇹🇼",
+      HK: "🇭🇰",
+      TR: "🇹🇷",
+      GR: "🇬🇷",
+      IL: "🇮🇱",
+      SA: "🇸🇦",
+      EG: "🇪🇬",
+      MA: "🇲🇦",
+      DZ: "🇩🇿",
+      TN: "🇹🇳",
+      ZA: "🇿🇦",
+      NG: "🇳🇬",
+      KE: "🇰🇪",
+      GH: "🇬🇭",
+      ET: "🇪🇹",
+      TZ: "🇹🇿",
+      UG: "🇺🇬",
+      ZW: "🇿🇼",
     };
-    return flagMap[country.toUpperCase()] || '🌐';
+    return flagMap[country.toUpperCase()] || "🌐";
   };
 
   const handlePlayDemo = (voice: Voice) => {
     // Stop any current speech
     window.speechSynthesis.cancel();
     setCurrentlyPlayingVoice(null);
-    
+
     const utterance = new SpeechSynthesisUtterance(demoText);
-    const synthVoice = window.speechSynthesis.getVoices().find(v => v.voiceURI === voice.voiceURI);
-    
+    const synthVoice = window.speechSynthesis
+      .getVoices()
+      .find((v) => v.voiceURI === voice.voiceURI);
+
     if (synthVoice) {
       utterance.voice = synthVoice;
       utterance.rate = 1;
       utterance.pitch = 1;
       utterance.volume = 1;
-      
+
       utterance.onstart = () => {
         console.log(`Started speaking with voice: ${voice.name}`);
         setCurrentlyPlayingVoice(voice.voiceURI);
       };
-      
+
       utterance.onend = () => {
         console.log(`Finished speaking with voice: ${voice.name}`);
         setCurrentlyPlayingVoice(null);
       };
-      
+
       utterance.onerror = (event) => {
-        console.error('Speech synthesis error:', event);
+        console.error("Speech synthesis error:", event);
         setCurrentlyPlayingVoice(null);
         toast({
           title: "Playback Error",
@@ -208,7 +282,7 @@ const VoiceExplorer = () => {
           variant: "destructive",
         });
       };
-      
+
       window.speechSynthesis.speak(utterance);
     }
   };
@@ -223,7 +297,9 @@ const VoiceExplorer = () => {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
-          <p className="text-lg text-muted-foreground">Loading available voices...</p>
+          <p className="text-lg text-muted-foreground">
+            Loading available voices...
+          </p>
         </div>
       </div>
     );
@@ -236,7 +312,8 @@ const VoiceExplorer = () => {
           Speech Synthesis Voice Explorer
         </h1>
         <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-          Discover and test all available speech synthesis voices in your browser. Search, filter, and play demos to find the perfect voice.
+          Discover and test all available speech synthesis voices in your
+          browser. Search, filter, and play demos to find the perfect voice.
         </p>
       </div>
 
@@ -257,7 +334,7 @@ const VoiceExplorer = () => {
               className="min-h-[100px] resize-none"
             />
           </div>
-          <Button 
+          <Button
             onClick={stopAllSpeech}
             variant="outline"
             className="w-full sm:w-auto"
@@ -293,7 +370,7 @@ const VoiceExplorer = () => {
                 className="w-full px-3 py-2 border border-input bg-background rounded-md text-sm"
               >
                 <option value="all">All Languages</option>
-                {uniqueLanguages.map(lang => (
+                {uniqueLanguages.map((lang) => (
                   <option key={lang} value={lang}>
                     {lang.toUpperCase()}
                   </option>
@@ -301,13 +378,13 @@ const VoiceExplorer = () => {
               </select>
             </div>
           </div>
-          
+
           <div className="flex items-center justify-between text-sm text-muted-foreground">
             <span>
               Showing {filteredVoices.length} of {voices.length} voices
             </span>
             <Badge variant="outline">
-              {voices.filter(v => v.localService).length} Local Voices
+              {voices.filter((v) => v.localService).length} Local Voices
             </Badge>
           </div>
         </CardContent>
@@ -323,10 +400,11 @@ const VoiceExplorer = () => {
                 {getLanguageDisplayName(language)}
               </h2>
               <Badge variant="outline" className="ml-auto">
-                {groupedVoices[language].length} {groupedVoices[language].length === 1 ? 'voice' : 'voices'}
+                {groupedVoices[language].length}{" "}
+                {groupedVoices[language].length === 1 ? "voice" : "voices"}
               </Badge>
             </div>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {groupedVoices[language].map((voice) => (
                 <VoiceCard
